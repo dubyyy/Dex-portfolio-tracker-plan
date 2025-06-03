@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { House } from 'lucide-react';
 import axios from 'axios';
 import { useAccount } from 'wagmi';
+import Image from 'next/image';
 
 // Define the Token interface
 interface Token {
@@ -81,7 +82,7 @@ const Dashboard: React.FC = () => {
         {!isLoading && !error && tokens.map((token, index) => (
           <div key={index} className="font-lighter text-[10px] grid grid-cols-4 gap-4 text-gray-100 lg:text-lg items-center border-b border-[#23272b] py-3 hover:bg-white/5 transition-colors duration-150">
             <div className="flex items-center">
-              {token.img && <img src={token.img} alt={token.name} className="w-6 h-6 mr-2 rounded-full" />}
+              {token.img && <Image src={token.img} alt={token.name} width={24} height={24} className="mr-2 rounded-full" />}
               <span>{token.name}</span>
             </div>
             <div>{token.symbol}</div>

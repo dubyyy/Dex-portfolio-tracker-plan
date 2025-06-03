@@ -3,8 +3,6 @@
 import * as React from "react"
 import { CircleArrowDown } from "lucide-react"
 
-
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -51,7 +49,7 @@ export function ComboboxDemo() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between bg-white/0 w-15 border-0 hover:bg-white/5 hover:text-white"
+          className="w-[200px] justify-between bg-white/0 border-0 hover:bg-white/5 hover:text-white"
         >
           {value
             ? frameworks.find((framework) => framework.value === value)?.label

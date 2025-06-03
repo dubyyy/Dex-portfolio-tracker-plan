@@ -41,7 +41,7 @@ export function WalletData() {
   // <TokenCountAlchemy /> will be rendered (see below)
 
   const { address } = useAccount()
-  const { data, isLoading, error } = useBalance({ address })
+  const { isLoading, error } = useBalance({ address })
 
   const [topHoldings, setTopHoldings] = useState<{ name: string, balance: number }[]>([])
   const [stableCoins, setStableCoins] = useState<{ name: string, balance: number }[]>([])
@@ -103,7 +103,7 @@ export function WalletData() {
       setTokenPrices(prices);
     };
     if (topHoldings.length > 0) fetchPrices();
-  }, [topHoldings]);
+  }, [topHoldings, tokenNameToId]);
 
   // Fetch USD prices for stableCoins
   useEffect(() => {
@@ -116,7 +116,7 @@ export function WalletData() {
       setStablePrices(prices);
     };
     if (stableCoins.length > 0) fetchPrices();
-  }, [stableCoins]);
+  }, [stableCoins, tokenNameToId]);
 
   if (!address) return <div className='h-full w-full flex items-center justify-center'>No wallet connected.</div>
   if (isLoading) return <div className='h-full w-full flex items-center justify-center'>Loading balance...</div>
@@ -199,7 +199,7 @@ function ListItem({
 
 export function ChartComponent() {
   const { address } = useAccount()
-  const { data, isLoading, error } = useBalance({ address })
+  const { isLoading, error } = useBalance({ address })
 
   if (!address) return <div>No wallet connected.</div>
   if (isLoading) return <div>Loading balance...</div>
@@ -265,7 +265,11 @@ export function TokenCountAlchemy() {
   const [tokenCount, setTokenCount] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState<string | null>(null);
-  const { data, isLoading, error } = useBalance({ address });
+  const { isLoading, error } = useBalance({ address });
+
+  interface AlchemyTokenBalance {
+    tokenBalance: string;
+  }
 
   useEffect(() => {
     if (!address) return;
@@ -291,11 +295,17 @@ export function TokenCountAlchemy() {
         const data = await res.json();
         if (data.error) throw new Error(data.error.message);
         // Count tokens with nonzero balance
-        const balances = data.result?.tokenBalances || [];
-        const nonzero = balances.filter((b: any) => b.tokenBalance && b.tokenBalance !== '0');
+        const balances: AlchemyTokenBalance[] = data.result?.tokenBalances || [];
+        const nonzero = balances.filter((b: AlchemyTokenBalance) => b.tokenBalance && b.tokenBalance !== '0');
         setTokenCount(nonzero.length);
-      } catch (e: any) {
-        setFailed(e.message || 'Failed to fetch token count');
+      } catch (e) {
+        if (e instanceof Error) {
+          setFailed(e.message);
+        } else if (typeof e === 'object' && e !== null && 'message' in e) {
+          setFailed(String((e as { message: string }).message));
+        } else {
+          setFailed('Failed to fetch token count');
+        }
       } finally {
         setLoading(false);
       }

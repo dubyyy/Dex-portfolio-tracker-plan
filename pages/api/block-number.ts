@@ -1,4 +1,4 @@
-const { Alchemy, Network } = require("alchemy-sdk");
+import { Alchemy, Network, type TokenBalance } from "alchemy-sdk";
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,11 +20,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const response = await alchemy.core.getTokenBalances(address);
         const tokenBalances = response.tokenBalances;
 
-        const filteredTokens = tokenBalances.filter((token: any) => {
+        const filteredTokens = tokenBalances.filter((token: TokenBalance) => {
             return BigInt(token.tokenBalance) > 0n;
         });
 
-        const tokensWithMetadata = await Promise.all(filteredTokens.map(async (token: any) => {
+        const tokensWithMetadata = await Promise.all(filteredTokens.map(async (token: TokenBalance) => {
             const metadata = await alchemy.core.getTokenMetadata(token.contractAddress);
             return {
                 name: metadata.name,
@@ -43,6 +43,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         res.status(200).json({ topThree });
     } catch (error) {
-        res.status(500).json({ error: String(error) || 'Internal Server Error' });
+        let errorMessage = 'Internal Server Error';
+        if (error instanceof Error) {
+            errorMessage = error.message;
+        } else if (typeof error === 'object' && error !== null && 'message' in error) {
+            errorMessage = String((error as { message: string }).message);
+        }
+        res.status(500).json({ error: errorMessage });
     }
 }

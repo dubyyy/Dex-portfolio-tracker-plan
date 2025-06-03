@@ -44,7 +44,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else {
       return res.status(400).json({ error: 'Invalid token address' });
     }
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message || 'Internal error' });
+  } catch (err) {
+    let errorMessage = 'Internal error';
+    if (err instanceof Error) {
+      errorMessage = err.message;
+    } else if (typeof err === 'object' && err !== null && 'message' in err) {
+      errorMessage = String((err as { message: string }).message);
+    }
+    return res.status(500).json({ error: errorMessage });
   }
 }

@@ -4,10 +4,8 @@ import {
   Line,
   XAxis,
   YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
-  ReferenceLine,
   ResponsiveContainer,
 } from 'recharts';
 
