@@ -40,7 +40,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const lowerAddress = token.contractAddress.toLowerCase();
         return (
           STABLECOIN_CONTRACTS[lowerAddress] &&
-          BigInt(token.tokenBalance) > 0n
+          token.tokenBalance !== null &&
+          token.tokenBalance !== '0x0' &&
+          BigInt(token.tokenBalance) > BigInt(0)
         );
       })
       .map((token) => {

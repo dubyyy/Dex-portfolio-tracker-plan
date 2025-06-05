@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const tokenBalances = response.tokenBalances;
 
         const filteredTokens = tokenBalances.filter((token: TokenBalance) => {
-            return BigInt(token.tokenBalance) > 0n;
+            return token.tokenBalance !== null && token.tokenBalance !== '0x0' &&  BigInt(token.tokenBalance) > BigInt(0);
         });
 
         const tokensWithMetadata = await Promise.all(filteredTokens.map(async (token: TokenBalance) => {
