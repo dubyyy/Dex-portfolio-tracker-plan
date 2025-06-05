@@ -49,12 +49,12 @@ export function ComboboxDemo() {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between bg-white/0 border-0 hover:bg-white/5 hover:text-white"
+          className="w-[200px] justify-end bg-white/0 border-0 hover:bg-white/5 hover:text-white"
         >
           {value
             ? frameworks.find((framework) => framework.value === value)?.label
             : "7D"}
-          <CircleArrowDown />
+          <CircleArrowDown className="ml-2" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
